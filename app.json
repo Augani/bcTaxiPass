@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "taxiPassenger",
-    "slug": "com.ganyobicodes.taxiPassenger",
+    "slug": "comganyobicodestaxiPassenger",
     "privacy": "public",
     "sdkVersion": "32.0.0",
     "platforms": [
