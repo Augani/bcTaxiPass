@@ -17,7 +17,7 @@ import {
 
 import Colors from "../utils/colors";
 import { gotoAnotherPage } from "../utils/universalFunctions";
-export class FareCalculator extends Component {
+export default class Trips extends Component {
     static navigationOptions = {
         header: null
       };
@@ -31,8 +31,7 @@ export class FareCalculator extends Component {
         fullName: '',
         email: '',
         Password: '',
-        Confirm: '',
-        calculateText: ''
+        Confirm: ''
       };
     
       phoneChanged = value => {
@@ -47,9 +46,10 @@ export class FareCalculator extends Component {
         this.setState({ checked });
       };
     
-    calculate = ()=>{
-
-    }
+    
+      sendCode = () => {
+       gotoAnotherPage('Home', this.props,{phone: this.state.phone})
+      };
     
       async componentDidMount() {
         var self = this;
@@ -84,12 +84,19 @@ export class FareCalculator extends Component {
                             color: Colors.primary
                           }}
                         >
-                          Fare calculator
+                          Account
                         </Text>
                       ) : null}
                     </View>
                   </Row>
-                  
+                  <Row size={1}>
+                        
+                        <View flex={1} style={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 15}}>
+                        <Text category="label" status="info">Continue with facebook</Text>
+                        <SocialIcon type="facebook" />
+                        <Texta style={{fontFamily: 'Normal-text-open', textAlign: 'center', margin: 20}}>-------OR-------</Texta>
+                        </View>
+                    </Row>
                    <Row size={4}>
                     <View
                       flex={1}
@@ -102,23 +109,39 @@ export class FareCalculator extends Component {
                       }}
                     >
                       <Input
-                        label="From"
-                        value={this.state.from}
+                        label="Full Name"
+                        value={this.state.fullName}
                         onChangeText={this.phoneChanged}
                       />
                       <Input
-                        label="To"
+                        label="Email"
+                        caption="This is optional, however you will be receiving your receipts and any promotional offers through this medium so you are advised to provide one."
                         value={this.state.email}
                         onChangeText={this.phoneChanged}
                       />
-
-                      <Row>
-                      <Text>Your fare is {this.state.calculateText}</Text>    
-                      </Row>
-                     
-                     
-         
-         <Button onPress={this.calculate}>Calculate</Button>
+                      <Input
+                        label="Password"
+                        caption="This will only be asked on login if you have any card information attached to your account"
+                        value={this.state.Password}
+                        onChangeText={this.phoneChanged}
+                      />
+                      <Input
+                        label="Confirm Password"
+                        value={this.state.Confirm}
+                        onChangeText={this.phoneChanged}
+                      />
+                      <Text category="label" status="info" style={{textAlign: 'center'}}>Terms and conditions</Text>
+                      {/* <Checkbox
+                      checked={this.state.checked}
+                      status="success"
+            onChange={this.onCheck} */}
+          <CheckBoxNew
+          style={{textAlign: 'center', alignSelf: 'center',}}
+      title='I have read and accepted all terms and conditions'
+      onPress={() => this.setState({checked: !this.state.checked})}
+      checked={this.state.checked}
+    />
+          {this.state.checked?  <Button onPress={this.sendCode}>Start journey</Button>:  <Button disabled={true} onPress={this.sendCode}>Done</Button>}
                     </View>
                   </Row>
                     
@@ -132,5 +155,3 @@ export class FareCalculator extends Component {
             )
     }
 }
-
-export default FareCalculator
