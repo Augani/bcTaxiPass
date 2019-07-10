@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
-import { View, StatusBar, Text as Texta, ScrollView } from "react-native";
+import { View, StatusBar, Text as Texta, ScrollView, AsyncStorage } from "react-native";
 import { Container, Header } from "native-base";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import FontLoader from "../utils/fontLoader";
 import { SocialIcon, Overlay, CheckBox as CheckBoxNew } from "react-native-elements";
 import { AppLoading } from "expo";
+import AwesomeAlert from 'react-native-awesome-alerts';
+
 
 import {
   Input,
@@ -16,7 +18,7 @@ import {
 } from "react-native-ui-kitten";
 
 import Colors from "../utils/colors";
-import { gotoAnotherPage } from "../utils/universalFunctions";
+import { gotoAnotherPage, makePostRequest } from "../utils/universalFunctions";
 export class Register extends Component {
     static navigationOptions = {
         header: null
@@ -31,7 +33,10 @@ export class Register extends Component {
         fullName: '',
         email: '',
         Password: '',
-        Confirm: ''
+        Confirm: '',
+        alertTitle: '',
+        alertContent: '',
+        showAlert: false
       };
     
       phoneChanged = value => {
@@ -39,6 +44,51 @@ export class Register extends Component {
               phone: value
           })
       };
+      emailChanged = value => {
+        this.setState({
+            email: value
+        })
+    };
+    nameChanged = value => {
+      this.setState({
+          fullName: value
+      })
+  };
+  passChanged = value => {
+    this.setState({
+        Password: value
+    })
+};
+showAlert = () => {
+  this.setState({
+    showAlert: true
+  });
+};
+
+hideAlert = () => {
+  this.setState({
+    showAlert: false
+  });
+};
+conChanged = value => {
+  this.setState({
+      Confirm: value
+  })
+};
+
+_retrieveData = async () => {
+  var self = this;
+  try {
+    const value = await AsyncStorage.getItem('number');
+    if (value !== null) {
+      self.setState({
+        phone: value
+      })
+    }
+  } catch (error) {
+    // Error retrieving data
+  }
+};
       onChange = ()=>{
 
       }
@@ -48,15 +98,45 @@ export class Register extends Component {
     
     
       sendCode = () => {
-       gotoAnotherPage('Home', this.props,{phone: this.state.phone})
+this.register();
+      //  gotoAnotherPage('Home', this.props,{phone: this.state.phone})
       };
+
+      register = ()=>{
+        var self = this;
+        const  {fullName, email, Password, Confirm, phone} = this.state;
+        if(!fullName || !email || !Password || !Confirm){
+          self.setState({
+              alertTitle: "Error",
+              alertContent: "Please fill all fields",
+              showAlert: true
+          })
+          return;
+        }
+        var data = {
+          username: fullName,
+          email: email,
+          userType: 1,
+          phone: phone
+        }
+        makePostRequest('https://ridebookingserver.herokuapp.com/api/user/register', data).then(r=>{
+          if(r.data.code == 200){
+            gotoAnotherPage('Home', self.props)
+
+          }
+        }).catch(e=>{
+
+        })
+      }
     
       async componentDidMount() {
         var self = this;
         await FontLoader();
         this.setState({ fontLoaded: true });
+        this._retrieveData();
       }
     render() {
+      const {showAlert, alertTitle, alertContent} = this.state;
       if(!this.state.fontLoaded){
         return <AppLoading />
       }
@@ -111,24 +191,24 @@ export class Register extends Component {
                   <Input
                     label="Full Name"
                     value={this.state.fullName}
-                    onChangeText={this.phoneChanged}
+                    onChangeText={this.nameChanged}
                   />
                   <Input
                     label="Email"
                     caption="This is optional, however you will be receiving your receipts and any promotional offers through this medium so you are advised to provide one."
                     value={this.state.email}
-                    onChangeText={this.phoneChanged}
+                    onChangeText={this.emailChanged}
                   />
                   <Input
                     label="Password"
                     caption="This will only be asked on login if you have any card information attached to your account"
                     value={this.state.Password}
-                    onChangeText={this.phoneChanged}
+                    onChangeText={this.passChanged}
                   />
                   <Input
                     label="Confirm Password"
                     value={this.state.Confirm}
-                    onChangeText={this.phoneChanged}
+                    onChangeText={this.conChanged}
                   />
                   <Text category="label" status="info" style={{textAlign: 'center'}}>Terms and conditions</Text>
                   {/* <Checkbox
@@ -149,6 +229,18 @@ export class Register extends Component {
         
 
             </ScrollView>
+            <AwesomeAlert
+          show={showAlert}
+          showProgress={false}
+          title={alertTitle}
+          message={alertContent}
+          closeOnTouchOutside={false}
+          closeOnHardwareBackPress={false}
+          showConfirmButton={true}
+          confirmText="Ohk"
+          confirmButtonColor={Colors.primary}
+          onConfirmPressed={()=>this.hideAlert()}
+        />
            
             </Container>
       

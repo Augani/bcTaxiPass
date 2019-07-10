@@ -5,6 +5,7 @@ import { Col, Row, Grid } from "react-native-easy-grid";
 import FontLoader from "../utils/fontLoader";
 import { SocialIcon, Overlay } from "react-native-elements";
 import { AppLoading } from "expo";
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 import {
   Input,
@@ -15,7 +16,7 @@ import {
 } from "react-native-ui-kitten";
 
 import Colors from "../utils/colors";
-import { gotoAnotherPage } from "../utils/universalFunctions";
+import { gotoAnotherPage, makePostRequest } from "../utils/universalFunctions";
 
 export class Login extends Component {
   static navigationOptions = {
@@ -26,7 +27,22 @@ export class Login extends Component {
     fontLoaded: false,
     phone: "",
     code: "",
-    visible: false
+    visible: false,
+    showAlert: false,
+    request: ''
+  };
+
+  showAlert = () => {
+    this.setState({
+      showAlert: true
+    });
+  };
+ 
+  hideAlert = () => {
+    this.setState({
+      showAlert: false
+    });
+    gotoAnotherPage('Verify', this.props,{phone: this.state.phone,request: this.state.request })
   };
 
   phoneChanged = value => {
@@ -36,7 +52,25 @@ export class Login extends Component {
   };
 
   sendCode = () => {
-   gotoAnotherPage('Verify', this.props,{phone: this.state.phone})
+    const {phone} = this.state;
+    if(phone.length < 9){
+      return;
+    }
+    var self = this;
+    var data = {
+      phone: phone
+    }
+    makePostRequest('https://ridebookingserver.herokuapp.com/api/auth/login',data).then(r=>{
+      if(r.data.request_id){
+        self.setState({
+          request: r.data.request_id
+        })
+        self.showAlert();
+      }
+    }).catch(e=>{
+
+    })
+  
   };
 
   async componentDidMount() {
@@ -45,6 +79,7 @@ export class Login extends Component {
     this.setState({ fontLoaded: true });
   }
   render() {
+    const {showAlert} = this.state;
     return (
       <Container>
         <StatusBar hidden />
@@ -268,6 +303,20 @@ export class Login extends Component {
             </View>
           </Row>
         </Grid>
+        <AwesomeAlert
+          show={showAlert}
+          showProgress={false}
+          title="Great"
+          message="Code has been sent to your phone, please check"
+          closeOnTouchOutside={false}
+          closeOnHardwareBackPress={false}
+          showConfirmButton={true}
+          confirmText="Ohk"
+          confirmButtonColor={Colors.primary}
+          onConfirmPressed={() => {
+            this.hideAlert();
+          }}
+        />
       </Container>
     );
   }

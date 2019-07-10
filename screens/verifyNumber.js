@@ -49,7 +49,9 @@ export default class AnimatedExample extends Component {
 
   state = {
     timer: 60,
-    timerUp: false
+    timerUp: false,
+    phone: this.props.navigation.getParam('phone'),
+    request: this.props.navigation.getParam('request')
   }
   _animationsColor = [...new Array(codeLength)].map(
     () => new Animated.Value(0)
@@ -57,6 +59,14 @@ export default class AnimatedExample extends Component {
   _animationsScale = [...new Array(codeLength)].map(
     () => new Animated.Value(1)
   );
+
+  _storeData = async (number) => {
+    try {
+      await AsyncStorage.setItem('number', number);
+    } catch (error) {
+      // Error saving data
+    }
+  };
 
   componentDidMount(){
     var self = this;
@@ -74,13 +84,8 @@ export default class AnimatedExample extends Component {
   }
 
   onFinishCheckingCode = code => {
-    if (code !== "1234") {
-      return Alert.alert(
-        "Confirmation Code",
-        "Code not match! Try 1234",
-        [{ text: "OK" }],
-        { cancelable: false }
-      );
+    if(code.length == 4){
+      
     }
 
     // Alert.alert("Confirmation Code", "Successful!", [{ text: "OK" }], {
@@ -141,6 +146,7 @@ export default class AnimatedExample extends Component {
   containerProps = { style: styles.inputWrapStyle };
 
   render() {
+    const {phone, request} = this.state;
     return (
       <Container>
         <StatusBar hidden />
@@ -155,7 +161,7 @@ export default class AnimatedExample extends Component {
                 alignItems: "center"
               }}
             >
-              <FirstScreen />
+              <FirstScreen phone={phone} />
             </View>
           </Row>
           <Row>
@@ -263,7 +269,7 @@ class FirstScreen extends Component {
             }}
           >
             <Text style={{fontFamily: 'Heading', fontSize:14, textAlign: 'center', color: Colors.primary}}>
-             Please check your phone. We just sent a code to your number.
+             Please check your phone. We just sent a code to {this.props.phone}.
               Code will automatically be checked when enterred
             </Text>
           </View>

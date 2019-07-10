@@ -12,6 +12,7 @@ import VerifyNumber from '../screens/verifyNumber';
 import { fromLeft, zoomIn, zoomOut, fromRight } from 'react-navigation-transitions';
 import SideMenu from '../components/SideMenu';
 import Feedback from '../screens/Feedback';
+import cardManage from '../screens/cardManage';
 
 const drawer =  createDrawerNavigator({
   Page0: {
@@ -71,6 +72,9 @@ const Root = createStackNavigator({
     },
     Page5:{
       screen: Settings
+    },
+    mCards:{
+      screen: cardManage
     }
   }, {
     contentComponent: SideMenu,

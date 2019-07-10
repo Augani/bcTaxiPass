@@ -41,6 +41,9 @@ export default class Payment extends Component {
           })
 
       }
+      gotoCards = ()=>{
+          gotoAnotherPage('mCards', this.props);
+      }
       onCashChanged = (v)=>{
         var self = this;
         this.setState({
@@ -115,24 +118,42 @@ export default class Payment extends Component {
                       }}
                     >
                         <Row>
-                        <CheckBox
-                        text="Cash"
-                            checked={this.state.cash}
-                            onChange={this.onCashChanged}
-                        />
+                        <CheckBoxNew
+      style={{textAlign: 'center', alignSelf: 'center',}}
+  title='Pay rides with Cash'
+  onPress={() => this.setState({cash: !this.state.cash, card: !this.state.card})}
+  checked={this.state.cash}
+/>
+                        
                         </Row>
                         <Row>
-                        <CheckBox
-                            text="Card"
-                            checked={this.state.card}
-                            onChange={this.onCardChanged}
-                        />
+                        <CheckBoxNew
+      style={{textAlign: 'center', alignSelf: 'center',}}
+  title='Pay rides with Card'
+  onPress={() => this.setState({card: !this.state.card, cash: !this.state.cash})}
+  checked={this.state.card}
+/>
+                       
                             
                         </Row>
                      
-                    <Button>Update</Button>
+                   
                     </View>
                   </Row>
+                  <Row size={2}>
+                  <View flex={1} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                  <Button>Update</Button>
+
+                      </View>
+                    </Row>
+                  
+                    <Row size={2}>
+                        {this.state.card? <View flex={1} style={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 15}}>
+                        <Text category="label" status="info" onPress={this.gotoCards}>Manage Cards</Text>
+                        </View>: null}
+                        
+                       
+                    </Row>
                     
                     </Grid>
             

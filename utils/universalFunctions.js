@@ -5,7 +5,7 @@ export const gotoAnotherPage = (page, props,params)=>{
 }
 
 
-export const makePostRequest = ()=>{
+export const makePostRequest = (url, data=null)=>{
     return new Promise((resolve, reject)=>{
         axios.post(url,data).then(r=>{
             resolve(r);

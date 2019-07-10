@@ -9,6 +9,8 @@ import {
   TouchableWithoutFeedback
 } from "react-native";
 import { Constants, MapView, Location, Permissions, AppLoading } from "expo";
+import Polyline from '@mapbox/polyline';
+import MapViewDirections from 'react-native-maps-directions';
 import {
   Container,
   Header,
@@ -43,6 +45,22 @@ import {
 import { DangerZone } from "expo";
 const { Lottie } = DangerZone;
 
+
+const GOOGLE_MAPS_APIKEY = "AIzaSyAzb_EziNyxtjF5QChY7QVsvTXdpNoJBmI";
+
+
+
+class TextList extends Component{
+  render(){
+    return(
+       <Text status="primary" category="label">{this.props.textT}</Text>
+      // <Button appearance="ghost" textStyle={{color: Colors.accent}}    >
+      //         {this.props.textT}
+      //         </Button>
+    )
+  }
+}
+
 export class Home extends Component {
   static navigationOptions = {
     header: null
@@ -59,7 +77,18 @@ export class Home extends Component {
     whereto: "",
     wherefrom: "Your Location",
     carLocation: null,
-    possibleLocations : []
+    possibleLocations : [],
+    ongoingTrip: true,
+    trip: {
+      "origin": {
+        latitude:5.5502,
+        longitude:-0.2174
+      },
+      "dest": {
+        "latitude":5.660989,
+        "longitude":-0.166404
+      }
+    }
    
   };
   determineUser() {
@@ -80,7 +109,7 @@ export class Home extends Component {
   }
 
   componentDidMount() {
-    // this._getLocationAsync();
+    this._getLocationAsync();
   //  connectToSocket();
   }
 
@@ -120,25 +149,59 @@ export class Home extends Component {
     });
   };
 
+  getDirections = ()=>{
+    var from  = this.state.location.coords;
+    var data = {
+      "origin":from,
+    "destination":{
+        "latitude":5.660989,
+        "longitude":-0.166404
+    },
+    "mode": "driving",
+    "traffic_model": "best_guess"
+    };
+    var self = this;
+    makePostRequest('https://ridebookingserver.herokuapp.com/api/maps/getDirection', data).then(r=>{
+      self.setState({
+        
+      })
+    }).catch(e=>{
+
+    })
+  }
+
   getAutoComplete = value => {
     var self = this;
     const { mapRegion } = this.state;
-    var url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${value}&location=${
-      mapRegion.latitude
-    },${mapRegion.longitude}&radius=500&key=${API_KEY}`;
-    makeGetRequest(url, null)
+    var url = `https://ridebookingserver.herokuapp.com/api/maps/autocomp`;
+    var data ={
+      "input": value,
+      "location":{
+        "latitude":mapRegion.latitude,
+        "longitude":mapRegion.longitude
+      }
+    }
+    makePostRequest(url, data)
       .then(res => {
+      
         self.setState({
-          possibleLocations: res.data.predictions
+          possibleLocations: res.data,
         });
       })
       .catch(err => {
         // console.log(err)
       });
+      console.log(self.state.possibleLocations);
   };
-  renderItem = info => {
-    console.log(info);
-    return <ListItem title={info.item.description} />;
+  renderItem = (info) => {
+    return (
+      <ListItem
+        onPress={this.onItemPress}
+        style={{display: 'flex', justifyContent: 'flex-start', backgroundColor: Colors.primary}}
+      >
+        <TextList textT={info.item.description} />
+      </ListItem>
+    );
   };
 
   renderCar = () => {
@@ -185,21 +248,20 @@ export class Home extends Component {
     return (
       <Container>
         <StatusBar hidden />
-        <Header style={{ backgroundColor: 'transparent' }}>
-        <Left>
-      
+        <Header transparent>
+        <Left transparent>
                     <TouchableWithoutFeedback onPress={this.openDrawer}>
                       <Icon
-                        reverse
                         name="menu"
                         type="entypo"
+                        color={Colors.primary}
                       />
                     </TouchableWithoutFeedback>
                  
 
         </Left>
-        <Body></Body>
-        <Right></Right>
+        <Body transparent/>
+        <Right transparent/>
         </Header>
 
         <View style={styles.container}>
@@ -213,15 +275,24 @@ export class Home extends Component {
             <MapView
               style={{ height: "100%", width: "100%" }}
               region={this.state.mapRegion}
-              onRegionChange={this._handleMapRegionChange}
+             
             >
-              <MapView.Marker
+             {this.state.ongoingTrip? 
+             <MapViewDirections
+             origin={this.state.trip.origin}
+             destination={this.state.trip.dest}
+             strokeWidth={3}
+            strokeColor="hotpink"
+             apikey={GOOGLE_MAPS_APIKEY}
+           />
+              :null}
+              {/* <MapView.Marker
                 coordinate={this.state.location.coords}
                 title="Your location"
                 description="Some description"
               >
                 <ThirdScreen />
-              </MapView.Marker>
+              </MapView.Marker> */}
             </MapView>
           )}
           <View
@@ -238,24 +309,33 @@ export class Home extends Component {
           >
             <Card style={{ height: "100%" }}>
               <CardItem header>
+                <Left>
                 {this.state.showCardBack ? (
                   <View style={{ flex: 1, width: "100%" }}>
                     <TouchableHighlight onPress={this.goBack}>
                       <Icon
-                        reverse
+                       
                         name="ios-return-left"
                         type="ionicon"
                         color={Colors.primary}
                       />
                     </TouchableHighlight>
                   </View>
-                ) : (
+                ) :null}
+
+                </Left>
+                <Body>
+                {this.state.showCardBack ? null: (
                   <Text category="h4">
-                    Good evening Augustus. Easily book a ride with just a tap
+                    {/* Good evening Augustus. Easily book a ride with just a tap */}
                   </Text>
                 )}
+
+                </Body>
+                <Right/>
+               
               </CardItem>
-              {this.state.showCardBack ? (
+              {this.state.showCardBack ?  (
                 <CardItem>
                   <LoadingScreen style={{ width: "100%" }} />
                 </CardItem>
@@ -275,15 +355,11 @@ export class Home extends Component {
                     onChangeText={this.placeChanged}
                   />
                   <ScrollView flex={1}>
-                    <Card>
-                      {!this.state.possibleLocations.length
-                        ? null
-                        : this.state.possibleLocations.map((item, index) => {
-                            return <CardItem key={index}>
-                                <Text>{item.description}</Text>
-                              </CardItem> 
-                          })}
-                    </Card>
+                  {this.state.possibleLocations.length? <List
+              
+              data={this.state.possibleLocations}
+              renderItem={this.renderItem}
+            /> : null}
                   </ScrollView>
                 </Body>
               </CardItem>
@@ -464,8 +540,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: Constants.statusBarHeight,
-    backgroundColor: "#ecf0f1"
   },
   paragraph: {
     margin: 24,

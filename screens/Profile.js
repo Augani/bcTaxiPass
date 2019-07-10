@@ -95,7 +95,8 @@ class Profile extends Component {
             <Row size={5}>
                   
                   <View flex={1} style={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 5}}>
-                  <Avatar size="giant" shape="rounded" source={{uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80'}} />
+                  <Avatar style={{width: '60%', height: '80%', borderRadius: 15}} size="large" shape="rounded" source={{uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80'}} />
+               
                    </View>
               </Row>
              <Row size={3}>

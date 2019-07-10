@@ -37,7 +37,10 @@ const data = [
 class TextList extends Component{
   render(){
     return(
-      <Text status="primary" category="p1">{this.props.textT}</Text>
+      // <Text status="primary" category="p1">{this.props.textT}</Text>
+      <Button appearance="ghost" textStyle={{color: Colors.primary}}    >
+              {this.props.textT}
+              </Button>
     )
   }
 }
@@ -55,12 +58,32 @@ class SideMenu extends Component {
 
   onItemPress = (index) => {
     // Handle item press
+    console.log(index)
+    var self = this;
+    switch(index){
+      case 0:
+      gotoAnotherPage('Page1', self.props)
+      break;
+      case 1:
+      gotoAnotherPage('Page2', self.props)
+      break; 
+      case 2:
+          gotoAnotherPage('Page3', self.props)
+      break;
+      case 3:
+          gotoAnotherPage('Page4', self.props)
+      break; 
+      case 4:
+          gotoAnotherPage('Page5', self.props)
+      break;   
+    }
   };
 
 renderItem = (info) => {
     return (
       <ListItem
         onPress={this.onItemPress}
+        style={{display: 'flex', justifyContent: 'flex-start', backgroundColor: Colors.accent}}
       >
         <TextList textT={info.item} />
       </ListItem>
@@ -69,16 +92,18 @@ renderItem = (info) => {
 
   render () {
     return (
-      <Container>
+      <Container style={{backgroundColor: Colors.accent}}>
         <Header transparent />
         <Grid>
           <Row size={3}>
-          <View flex={1} style={{display: 'flex', justifyContent: 'center',alignItems: 'center', alignContent: 'center'}}>
-          <Avatar style={{width: '60%', height: '80%', borderRadius: 15}} size="large" shape="rounded" source={{uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80'}} />
+          <View flex={1} style={{display:  'flex', borderBottomColor: Colors.primary,
+    borderBottomWidth: 1, justifyContent: 'center',alignItems: 'center', alignContent: 'center', padding: 15}}>
+          <Avatar style={{width: '60%', height: '100%', borderRadius: 15}} size="giant" shape="rounded" source={{uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80'}} />
           </View>
           </Row>
-          <Row size={3}>
-            <View flex={1} style={{display: 'flex', flexDirection: 'column',}}>
+         
+          <Row size={5}>
+            <View flex={1} style={{display: 'flex', flexDirection: 'column',backgroundColor: Colors.accent}}>
             {/* <Row>
               <Button appearance="ghost"   onPress={this.navigateToScreen('Page1')}>
               Profile
@@ -104,6 +129,7 @@ Feedback              </Button>
               </Button>
               </Row> */}
               <List
+              style={{backgroundColor: Colors.accent}}
               data={data}
               renderItem={this.renderItem}
             />
@@ -114,7 +140,10 @@ Feedback              </Button>
 
           </Row>
           <Row size={1}>
-          <Button appearance="ghost">Logout</Button>
+            <View flex={1} style={{display: 'flex', justifyContent: 'center'}}>
+            <Button textStyle={{color: Colors.accent}} appearance="ghost">Logout</Button>
+
+            </View>
           </Row>
         </Grid>
       </Container>
