@@ -9,6 +9,9 @@
   "dependencies": {
     "@eva-design/eva": "^1.0.0",
     "@mapbox/polyline": "^1.1.0",
+    "appcenter": "2.1.0",
+    "appcenter-analytics": "2.1.0",
+    "appcenter-crashes": "2.1.0",
     "axios": "^0.19.0",
     "expo": "^32.0.0",
     "native-base": "^2.12.1",

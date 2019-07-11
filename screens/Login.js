@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StatusBar } from "react-native";
+import { View, StatusBar, AsyncStorage } from "react-native";
 import { Container, Header } from "native-base";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import FontLoader from "../utils/fontLoader";
@@ -51,6 +51,14 @@ export class Login extends Component {
       })
   };
 
+  _storeData = async (id) => {
+    try {
+      await AsyncStorage.setItem('request', id);
+    } catch (error) {
+      // Error saving data
+    }
+  };
+
   sendCode = () => {
     const {phone} = this.state;
     if(phone.length < 9){
@@ -65,6 +73,7 @@ export class Login extends Component {
         self.setState({
           request: r.data.request_id
         })
+        self._storeData(self.state.request);
         self.showAlert();
       }
     }).catch(e=>{

@@ -85,7 +85,7 @@ const Root = createStackNavigator({
   Verify: {screen: VerifyNumber}
 
 },{
-      initialRouteName: 'Register',
+      // initialRouteName: 'Register',
      transitionConfig: (nav) => handleCustomTransition(nav),
      headerMode: 'none',
   navigationOptions: {
