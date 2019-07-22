@@ -464,7 +464,7 @@ class FourthScreen extends Component {
         </Row>
         <Row size={1}>
           <View flex={1} style={{display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 20}}>
-          <Button size="small" onPress={this.start}>
+          <Button size="large" onPress={this.start}>
             Start
           </Button>
           </View>

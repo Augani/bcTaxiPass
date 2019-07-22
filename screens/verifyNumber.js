@@ -82,16 +82,70 @@ export default class AnimatedExample extends Component {
       })
     }, 1000)
   }
+  _retrieveData = async (name) => {
+    var self = this;
+    try {
+      const value = await AsyncStorage.getItem(name);
+      if (value !== null) {
+        return value;
+      }
+    } catch (error) {
+      // Error retrieving data
+    }
+  };
 
-  onFinishCheckingCode = code => {
+  onFinishCheckingCode = async code => {
+    var self = this;
+    var data = {
+      id:self.state.request,
+      code:code,
+      phone:self.state.phone
+    }
+    makePostRequest('https://ridebookingserver.herokuapp.com/api/auth/verify',data).then(r=>{
+      if(r.data.data.users){
+        gotoAnotherPage("Home", this.props, null);
+        return;
+      }
+      if(r.data.data.result){
+       
+        gotoAnotherPage("Register", this.props, null);
+      }else{
+        self.showAlert();
+      }
+    }).catch(e=>{
+
+    })
     if(code.length == 4){
-      
+      makePostRequest('https://ridebookingserver.herokuapp.com/api/auth/verify',data).then(r=>{
+      if(r.data.request_id){
+        self.setState({
+          request: r.data.request_id
+        })
+        self._storeData(self.state.request);
+        self.showAlert();
+      }
+    }).catch(e=>{
+
+    })
     }
 
     // Alert.alert("Confirmation Code", "Successful!", [{ text: "OK" }], {
     //   cancelable: true
     // });
     gotoAnotherPage("Register", this.props, null);
+  };
+
+  showAlert = () => {
+    this.setState({
+      showAlert: true
+    });
+  };
+ 
+  hideAlert = () => {
+    this.setState({
+      showAlert: false
+    });
+    gotoAnotherPage('Verify', this.props,{phone: this.state.phone,request: this.state.request })
   };
 
   animateCell({ hasValue, index, isFocused }) {

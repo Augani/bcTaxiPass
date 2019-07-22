@@ -69,9 +69,9 @@ export class Login extends Component {
       phone: phone
     }
     makePostRequest('https://ridebookingserver.herokuapp.com/api/auth/login',data).then(r=>{
-      if(r.data.request_id){
+      if(r.data.data.request_id){
         self.setState({
-          request: r.data.request_id
+          request: r.data.data.request_id
         })
         self._storeData(self.state.request);
         self.showAlert();
@@ -207,7 +207,7 @@ export class Login extends Component {
                     color: Colors.primary
                   }}
                 >
-                  Lyca
+                  BcTaxi
                 </Text>
               ) : null}
             </View>
